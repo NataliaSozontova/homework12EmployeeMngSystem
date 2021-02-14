@@ -19,7 +19,7 @@ const viewDepartment = () => {
         if (err) throw err;
         // Log all results of the SELECT statement
         console.table(res);
-        // connection.end();
+        startApp();
     });
 };
 
@@ -28,7 +28,7 @@ const viewRoles = () => {
         if (err) throw err;
         // Log all results of the SELECT statement
         console.table(res);
-        // connection.end();
+        startApp();
     });
 };
 
@@ -37,7 +37,7 @@ const viewEmployees = () => {
         if (err) throw err;
         // Log all results of the SELECT statement
         console.table(res);
-        // connection.end();
+        startApp();
     });
 };
 
@@ -46,7 +46,8 @@ const viewEmployeesByDepartment = () => {
     query += 'FROM employee INNER JOIN department ON employee.id = department.id';
     connection.query(query, (err, res) => {
         if (err) throw err;
-        console.table(res)
+        console.table(res);
+        startApp();
     });
 }
 
@@ -55,7 +56,8 @@ const viewEmployeesByRole = () => {
     query += 'FROM employee INNER JOIN role ON employee.role_id = role.id';
     connection.query(query, (err, res) => {
         if (err) throw err;
-        console.table(res)
+        console.table(res);
+        startApp();
     });
 }
 
@@ -77,21 +79,129 @@ const addDepartment = () => {
             (err, res) => {
                 if (err) throw err;
                 console.log(`${res.affectedRows} department inserted!\n`);
+                startApp();
             }
         );
     }
     );
 };
 
-const updateRole = () => {
+const addNewRole = () => {
+    console.log('Inserting a new role...\n');
+    let departmentId;
 
+    connection.query('SELECT * FROM department', (err, res) => {
+        if (err) throw err;
+
+        inquirer.prompt([
+            {
+                type: 'input',
+                name: 'roleTitle',
+                message: 'What is new role would you like to add?',
+            },
+            {
+                type: 'input',
+                name: 'roleSalary',
+                message: 'What is the salary amount for this new role?',
+            },
+            {
+                type: "list",
+                name: 'roleDepartment',
+                message: 'Which department you would like to add a new role?',
+                choices() {
+                    const choiceArray = [];
+                    res.forEach(({ id, name }) => {
+                        choiceArray.push(name);
+                    });
+
+                    return choiceArray;
+                },
+            },
+        ]).then(answers => {
+            res.forEach((departmentName) => {
+                if (departmentName.name === answers.roleDepartment) {
+                    departmentId = departmentName.id;
+                }
+            });
+            const query = connection.query(
+                'INSERT INTO role SET ?',
+                {
+                    title: answers.roleTitle,
+                    salary: answers.roleSalary,
+                    department_id: departmentId
+                },
+                (err, res) => {
+                    if (err) throw err;
+                    console.log(`${res.affectedRows} role inserted!\n`);
+                    startApp();
+                }
+            );
+        }
+        );
+    });
+}
+
+const addNewEmployee = () => {
+    console.log('Inserting a new employee...\n');
+    let roleId;
+
+    connection.query('SELECT * FROM role', (err, res) => {
+        if (err) throw err;
+
+        inquirer.prompt([
+            {
+                type: 'input',
+                name: 'firstName',
+                message: 'What is a new employee first name?',
+            },
+            {
+                type: 'input',
+                name: 'lastName',
+                message: 'What is a new employee last name?',
+            },
+            {
+                type: "list",
+                name: 'role',
+                message: 'What is a new employee role?',
+                choices() {
+                    const choiceArray = [];
+                    res.forEach(({ title }) => {
+                        choiceArray.push(title);
+                    });
+
+                    return choiceArray;
+                },
+            },
+        ]).then(answers => {
+            res.forEach((role) => {
+                if (role.title === answers.role) {
+                    roleId = role.id;
+                }
+            });
+            const query = connection.query(
+                'INSERT INTO employee SET ?',
+                {
+                    first_name: answers.firstName,
+                    last_name: answers.lastName,
+                   role_id: roleId
+                },
+                (err, res) => {
+                    if (err) throw err;
+                    console.log(`${res.affectedRows} employee inserted!\n`);
+                    startApp();
+                }
+            );
+        }
+        );
+    });
+}
+
+const updateRole = () => {
     let employeeID;
     let roleID;
-    const employeesArray = [];
 
     connection.query('SELECT id, first_name, last_name FROM employee', (err, res) => {
         if (err) throw err;
-        employeesArray.push(res);
 
         inquirer.prompt([
             {
@@ -166,7 +276,7 @@ const startApp = () => {
         .then((answer) => {
             // based on their answer call matching functions
 
-            switch (answer) {
+            switch (answer.option) {
                 case 'View all employees':
                     viewEmployees();
                     break;
@@ -183,18 +293,19 @@ const startApp = () => {
                     viewEmployeesByRole();
                     break;
                 case 'Add new employee':
-
+                    addNewEmployee();
                     break;
                 case 'Add new department':
                     addDepartment();
                     break;
                 case 'Add new role':
-
+                    addNewRole();
                     break;
                 case 'Update employee role':
                     updateRole();
                     break;
                 default:
+                    connection.end();
                     break;
             }
         });
@@ -203,5 +314,5 @@ const startApp = () => {
 connection.connect((err) => {
     if (err) throw err;
     console.log(`connected as id ${connection.threadId}\n`);
-    viewEmployeesByRole();
+    startApp();
 });
