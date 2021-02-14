@@ -27,7 +27,7 @@ This Application called Employee Management System that can be used to managing 
 
 ![Screenshot](images/addNewRole_1.png)
 
-![Screenshot](images/addNewRole_2.png)
+<!-- ![Screenshot](images/addNewRole_2.png) -->
 
 * View all employees
 
