@@ -21,7 +21,7 @@ This Application called Employee Management System that can be used to managing 
 
 * Add new department
 
-![Screenshot](images/addnewDep.png)
+![Screenshot](images/addNewDep.png)
 
 * Add new role
 
@@ -39,19 +39,15 @@ This Application called Employee Management System that can be used to managing 
 
 * View all roles
 
-![Screenshot](assets/images/app_ui.png)
+![Screenshot](/images/viewRoles.png)
 
 * View all employees by roles
 
-![Screenshot](images/viewRoles.png)
+![Screenshot](images/viewEmpByRole.png)
 
 * View all employees by departments
 
-![Screenshot](images/viewEmplByDep.png)
-
-* View all employees by roles
-
-![Screenshot](images/viewEmplByRole.png)
+![Screenshot](images/viewEmpByDep.png)
 
 * Update employee role
 
