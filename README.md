@@ -61,9 +61,7 @@ This Application called Employee Management System that can be used to managing 
 
 ## Installation 
 * Clone this repository.
-
 https://github.com/NataliaSozontova/homework12EmployeeMngSystem
-
 
 ## Tests
 
