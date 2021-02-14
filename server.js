@@ -87,75 +87,91 @@ const addDepartment = () => {
 
 const updateRole = () => {
 
-    const roles = [];
-    const employees = [];
-    //create arary - put roles
-    //create aray - put employees info
-    //selct name/value
-    //name => name
-    //value => id 
-
-    connection.query('SELECT id, title FROM role', (err, res) => {
-        if (err) throw err;
-        roles.push(res);
-        // Log all results of the SELECT statement
-        console.table(res);
-        console.log(roles);
-        // connection.end();
-    });
+    let employeeID;
+    let roleID;
+    const employeesArray = [];
 
     connection.query('SELECT id, first_name, last_name FROM employee', (err, res) => {
         if (err) throw err;
-        employees.push(res);
-        // Log all results of the SELECT statement
-        console.table(res);
-        console.log(employees);
-        // connection.end();
+        employeesArray.push(res);
 
-
-    inquirer.prompt([
-        {
-            type: "list",
-            name: "choice",
-            choices() {
-                const choiceArray = [];
-                res.forEach(({ last_name }) => {
-                  choiceArray.push(last_name);
-                });
-                return choiceArray;
-              },
-              message: 'Which employee role would you like to change?',
+        inquirer.prompt([
+            {
+                type: "list",
+                name: "choice",
+                choices() {
+                    const choiceArray = [];
+                    res.forEach(({ first_name, last_name }) => {
+                        choiceArray.push(first_name + " " + last_name);
+                    });
+                    return choiceArray;
+                },
+                message: 'Which employee role would you like to change?',
             },
-        //  {
-        //      type: 'list',
-        //      name: 'role',
-        //      message: 'What role would u like update?',
-        //      choices?
-        //         //  arrayRoles
-        //  },
-    ]).then(answers => {
-        const query = connection.query(
-            'UPDATE employee SET role_id=? WHERE id=?',
-            [
-                answers.role,
-                answers.employee
-            ]
+        ]).then(answer => {
+            res.forEach((employee) => {
+                if (employee.last_name === answer.choice.split(" ")[1]) {
+                    employeeID = employee.id;
+                }
+            });
 
-            ,
-            (err, res) => {
+            connection.query('SELECT id, title FROM role', (err, res) => {
                 if (err) throw err;
-                console.log(`${res.affectedRows} employee been updated!\n`);
-            }
-        );
-    }
 
-    );
-});
-}
+                inquirer.prompt([
+                    {
+                        type: "list",
+                        name: "choiceRole",
+                        choices() {
+                            const choiceArray = [];
+                            res.forEach(({ title }) => {
+                                choiceArray.push(title);
+                            });
+                            return choiceArray;
+                        },
+                        message: 'What is new role you would like to assign to the employee?',
+                    },
+                ])
+                    .then((answer) => {
+                        res.forEach((role) => {
+                            if (role.title === answer.choiceRole) {
+                                roleID = role.id;
+                            }
+                        });
 
+                        connection.query('UPDATE employee SET ? WHERE ?',
+                            [{ role_id: roleID },
+                            { id: employeeID }],
+                            (err) => {
+                                if (err) throw err;
+                                 startApp();
+                            }
+                        );
+                    });
+            });
+        });
+    });
+};
 
-
-
+const startApp = () => {
+    inquirer
+      .prompt({
+        name: 'postOrBid',
+        type: 'list',
+        message: 'Would you like to [POST] an auction or [BID] on an auction?',
+        choices: ['POST', 'BID', 'EXIT'],
+      })
+      .then((answer) => {
+        // based on their answer, either call the bid or the post functions
+        if (answer.postOrBid === 'POST') {
+          postAuction();
+        } else if (answer.postOrBid === 'BID') {
+          bidAuction();
+        } else {
+          connection.end();
+        }
+      });
+  };
 
 connection.connect((err) => {
     if (err) throw err;
