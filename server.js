@@ -15,7 +15,7 @@ const connection = mysql.createConnection({
 });
 
 const viewDepartment = () => {
-    connection.query('SELECT name FROM department', (err, res) => {
+    connection.query('SELECT * FROM department', (err, res) => {
         if (err) throw err;
         // Log all results of the SELECT statement
         console.table(res);
@@ -24,7 +24,7 @@ const viewDepartment = () => {
 };
 
 const viewRoles = () => {
-    connection.query('SELECT title FROM role', (err, res) => {
+    connection.query('SELECT * FROM role', (err, res) => {
         if (err) throw err;
         // Log all results of the SELECT statement
         console.table(res);
@@ -33,7 +33,7 @@ const viewRoles = () => {
 };
 
 const viewEmployees = () => {
-    connection.query('SELECT first_name, last_name FROM employee', (err, res) => {
+    connection.query('SELECT * FROM employee', (err, res) => {
         if (err) throw err;
         // Log all results of the SELECT statement
         console.table(res);
