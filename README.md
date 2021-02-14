@@ -81,7 +81,7 @@ Inquirer
 MySQL
 
 ## Contribution Guidlines
-Direct link to repository: https://github.com/NataliaSozontova/week11NoteTaker
+Direct link to repository: https://github.com/NataliaSozontova/homework12EmployeeMngSystem
 
 ## License
 Copyright(c) 2021 Natalia Sozontova.
