@@ -61,6 +61,24 @@ const viewEmployees = () => {
     });
 };
 
+const viewEmployeesByDepartment = () => {
+    let query = 'SELECT first_name, last_name, name ';
+    query += 'FROM employee INNER JOIN department ON employee.id = department.id';
+    connection.query(query, (err, res) => {
+        if (err) throw err;
+        console.table(res)
+    });
+}
+
+const viewEmployeesByRole = () => {
+    let query = 'SELECT first_name, last_name, title ';
+    query += 'FROM employee INNER JOIN role ON employee.role_id = role.id';
+    connection.query(query, (err, res) => {
+        if (err) throw err;
+        console.table(res)
+    });
+}
+
 const addDepartment = () => {
     console.log('Inserting a new department...\n');
 
@@ -144,7 +162,7 @@ const updateRole = () => {
                             { id: employeeID }],
                             (err) => {
                                 if (err) throw err;
-                                 startApp();
+                                startApp();
                             }
                         );
                     });
@@ -155,26 +173,29 @@ const updateRole = () => {
 
 const startApp = () => {
     inquirer
-      .prompt({
-        name: 'postOrBid',
-        type: 'list',
-        message: 'Would you like to [POST] an auction or [BID] on an auction?',
-        choices: ['POST', 'BID', 'EXIT'],
-      })
-      .then((answer) => {
-        // based on their answer, either call the bid or the post functions
-        if (answer.postOrBid === 'POST') {
-          postAuction();
-        } else if (answer.postOrBid === 'BID') {
-          bidAuction();
-        } else {
-          connection.end();
-        }
-      });
-  };
+        .prompt({
+            name: 'option',
+            type: 'list',
+            message: 'What Would you like to do?',
+            choices: ['View all employees', 'View all depatments', 'View all roles',
+                'Add new employee', 'Add new department', 'Add new role',
+                'Update employee role',
+                'EXIT'],
+        })
+        .then((answer) => {
+            // based on their answer, either call the bid or the post functions
+            if (answer.postOrBid === 'POST') {
+                postAuction();
+            } else if (answer.postOrBid === 'BID') {
+                bidAuction();
+            } else {
+                connection.end();
+            }
+        });
+};
 
 connection.connect((err) => {
     if (err) throw err;
     console.log(`connected as id ${connection.threadId}\n`);
-    updateRole();
+    viewEmployeesByRole();
 });
