@@ -2,33 +2,13 @@ const mysql = require('mysql');
 const inquirer = require("inquirer");
 const cTable = require('console.table');
 
-
-// console.table([
-//   {
-//     name: 'foo',
-//     age: 10
-//   }, {
-//     name: 'bar',
-//     age: 20
-//   }
-// ]);
-
-// // prints
-// name  age
-// ----  ---
-// foo   10
-// bar   20
-
 // create the connection information for the sql database
 const connection = mysql.createConnection({
     host: 'localhost',
-
     // Your port; if not 3306
     port: 3306,
-
     // Your username
     user: 'root',
-
     // Your password
     password: 'password',
     database: 'employees_db',
@@ -177,19 +157,45 @@ const startApp = () => {
             name: 'option',
             type: 'list',
             message: 'What Would you like to do?',
-            choices: ['View all employees', 'View all depatments', 'View all roles',
+            choices: ['View all employees', 'View all departments', 'View all roles',
+                'View employees by departments', 'View employees by roles',
                 'Add new employee', 'Add new department', 'Add new role',
                 'Update employee role',
                 'EXIT'],
         })
         .then((answer) => {
-            // based on their answer, either call the bid or the post functions
-            if (answer.postOrBid === 'POST') {
-                postAuction();
-            } else if (answer.postOrBid === 'BID') {
-                bidAuction();
-            } else {
-                connection.end();
+            // based on their answer call matching functions
+
+            switch (answer) {
+                case 'View all employees':
+                    viewEmployees();
+                    break;
+                case 'View all departments':
+                    viewDepartment();
+                    break;
+                case 'View all roles':
+                    viewRoles();
+                    break;
+                case 'View employees by departments':
+                    viewEmployeesByDepartment();
+                    break;
+                case 'View employees by roles':
+                    viewEmployeesByRole();
+                    break;
+                case 'Add new employee':
+
+                    break;
+                case 'Add new department':
+                    addDepartment();
+                    break;
+                case 'Add new role':
+
+                    break;
+                case 'Update employee role':
+                    updateRole();
+                    break;
+                default:
+                    break;
             }
         });
 };
