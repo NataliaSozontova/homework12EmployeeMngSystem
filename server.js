@@ -250,8 +250,9 @@ const updateRole = () => {
                         connection.query('UPDATE employee SET ? WHERE ?',
                             [{ role_id: roleID },
                             { id: employeeID }],
-                            (err) => {
+                            (err, res) => {
                                 if (err) throw err;
+                                console.log(`${res.affectedRows} employee role updated!\n`);
                                 startApp();
                             }
                         );
@@ -303,6 +304,10 @@ const startApp = () => {
                     break;
                 case 'Update employee role':
                     updateRole();
+                    break;
+                case 'EXIT':
+                    console.log("THANK YOU for using our application!");
+                    connection.end();  
                     break;
                 default:
                     connection.end();
